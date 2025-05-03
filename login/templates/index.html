@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <!-- 新增地图库和词云库 -->
+     <!-- 新增 ECharts 和 jQuery -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.3.2/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.1.0/src/wordcloud2.min.js"></script>
+
+
+    <style>
+        :root {
+            --primary-color: rgba(91, 221, 238, 0.9);
+            --accent-color: #5BEDEE;
+            --dark-bg: #0a0a0a;
+        }
+
+        body {
+            font-family: "楷体", "Microsoft YaHei", serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #000000, #00111a);
+            color: var(--primary-color);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(17, 17, 17, 0.95);
+            border-bottom: 1px solid var(--primary-color);
+            box-shadow: 0 4px 20px rgba(91, 221, 238, 0.1);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px rgba(91, 221, 238, 0.3);
+        }
+
+        #time {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: rgba(91, 221, 238, 0.8);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-container {
+            display: flex;
+            gap: 2rem;
+            width: 100%;
+            height: 70vh;
+        }
+
+        #map, #wordcloud {
+            flex: 1;
+            min-width: 45%;
+            background: #111;
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(91, 221, 238, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .content-container {
+                flex-direction: column;
+            }
+            #map, #wordcloud {
+                width: 100%;
+                height: 400px;
+            }
+        }
+
+        .nav-button {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, rgba(91, 221, 238, 0.2), rgba(91, 221, 238, 0.1));
+            border: 1px solid var(--primary-color);
+            border-radius: 6px;
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: linear-gradient(135deg, rgba(91, 221, 238, 0.3), rgba(91, 221, 238, 0.2));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(91, 221, 238, 0.2);
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            background: rgba(91, 221, 238, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--accent-color);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .nav-button {
+                flex: 1 1 45%;
+                padding: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>🛣️ 贵阳市交通分析系统</h2>
+        <div class="header-right">
+            <a href="/logout" class="logout-btn">安全登出</a>
+            <div id="time"></div>
+        </div>
+    </header>
+    <main>
+        <div class="button-group">
+            <a href="http://127.0.0.1:5001" target="_blank">
+                <button class="nav-button">🚦 信号灯优化大屏</button>
+            </a>
+            <a href="http://127.0.0.1:5002" target="_blank">
+                <button class="nav-button">🛣️ 交通拥堵情况分析</button>
+            </a>
+            <a href="http://127.0.0.1:5003" target="_blank">
+                <button class="nav-button">📊 交通人群监控分析</button>
+            </a>
+        </div>
+        <div class="content-container">
+            <div id="map"></div>
+            <div id="wordcloud"></div>
+        </div>
+    </main>
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+    <script>
+        function updateTime() {
+            const options = { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false
+            };
+            const timeString = new Date().toLocaleTimeString('zh-CN', options);
+            document.getElementById('time').innerHTML = `🕒 ${timeString}`;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // 初始化词云
+        const colors = [
+            '#5BEDEE',   // 主色调蓝绿
+            '#7FFFD4',   // 水绿色
+            '#98FB98',   // 薄荷绿
+            '#00FA9A',   // 中春绿色
+            '#20B2AA',   // 浅海绿
+            '#FFD700',   // 科技金
+            '#FFA07A'    // 珊瑚橙
+        ];
+
+        const wordCloud = WordCloud(document.getElementById('wordcloud'), {
+            list: [
+                ['北京路', 35], ['中华路', 30],
+                ['观山湖', 28], ['花溪区', 25],
+                ['拥堵指数', 40], ['车流量', 38],
+                ['高峰时段', 32], ['地铁1号线', 28],
+                ['延安路', 25], ['黔灵山公园', 22],
+                ['金阳客车站', 30], ['云岩区', 25],
+                ['早高峰', 28], ['晚高峰', 28],
+                ['公交线路', 26], ['轨道交通', 32],
+                ['事故多发', 24], ['施工路段', 22],
+                ['平均车速', 27], ['通行能力', 29]
+            ],
+            gridSize: 10,
+            weightFactor: 1.5,
+            color: function (word, weight) {
+                return colors[Math.floor(Math.random() * colors.length)];
+            },
+            backgroundColor: '#111',
+            rotateRatio: 0.3,         // 30%的词汇会有旋转
+            shape: 'diamond',         // 钻石形状
+            hover: window.drawWord    // 允许hover交互
+        });
+
+        // 添加交互效果
+        document.querySelectorAll('#map, #wordcloud').forEach(box => {
+            box.addEventListener('mouseover', () => {
+                box.style.transform = 'scale(1.005)';
+            });
+            box.addEventListener('mouseout', () => {
+                box.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

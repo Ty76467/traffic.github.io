@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能路口监测系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@7.4.0/ol.css">
+    <script src="https://cdn.jsdelivr.net/npm/ol@7.4.0/dist/ol.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1>智能路口监测系统</h1>
+            <div class="intersection-selector">
+                <label>当前路口：</label>
+                <select v-model="selectedIntersection" @change="handleIntersectionChange">
+                    <option value="intersection1">花果园中央商务区路口</option>
+                    <option value="intersection2">观山湖区行政中心路口</option>
+                    <option value="intersection3">贵阳北站枢纽路口</option>
+                    <option value="intersection4">云岩区中华路口</option>
+                    <option value="intersection5">南明区市西路口</option>
+                </select>
+            </div>
+        </header>
+        
+        <div class="dashboard-container">
+            <!-- 指标面板和摄像头预览 -->
+            <div class="metrics-container">
+                <div class="metrics-left">
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <h3>当前流量</h3>
+                            <div class="value">{{currentFlow}} 辆/h</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3>平均车速</h3>
+                            <div class="value">{{averageSpeed}} km/h</div>
+                        </div>
+                    </div>
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <h3>异常事件</h3>
+                            <div class="value">{{abnormalEvents}} 起</div>
+                        </div>
+                        <div class="metric-card">
+                            <h3>信号状态</h3>
+                            <div class="signal-light" :class="currentSignal"></div>
+                            <div class="countdown">{{countdown}}s</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="camera-preview">
+                    <img src="images/camera1.jpg" alt="主摄像头预览">
+                </div>
+            </div>
+
+            <!-- 异常事件告警 -->
+            <div class="alert-banner">
+                <div class="alert-content">{{currentAlert}}</div>
+            </div>
+
+            <!-- 交通态势地图 -->
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="video-overlay">
+                    <div class="camera-feed" v-for="n in 4" :key="n" :data-camera-id="'#' + n"></div>
+                </div>
+            </div>
+
+            <!-- 信号优化面板 -->
+            <div class="optimization-panel">
+                <h3>信号配时优化</h3>
+                <div class="chart-container" id="phaseChart"></div>
+                
+                <div class="controls">
+                    <div class="slider-group">
+                        <label>种群规模 <span class="value-display">{{populationSize}}</span></label>
+                        <input type="range" v-model="populationSize" min="50" max="200" @input="updateOptimization">
+                    </div>
+                    <div class="slider-group">
+                        <label>迭代次数 <span class="value-display">{{iterations}}</span></label>
+                        <input type="range" v-model="iterations" min="10" max="100" @input="updateOptimization">
+                    </div>
+                </div>
+
+                <div class="optimization-status">
+                    <div class="status-item">
+                        <div class="label">当前红灯</div>
+                        <div class="value">{{currentPhase.red}}s</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="label">建议红灯</div>
+                        <div class="value">{{optimizedPhase.red}}s</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="label">当前绿灯</div>
+                        <div class="value">{{currentPhase.green}}s</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="label">建议绿灯</div>
+                        <div class="value">{{optimizedPhase.green}}s</div>
+                    </div>
+                </div>
+
+                <div class="trend-chart" id="trendChart"></div>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html> 

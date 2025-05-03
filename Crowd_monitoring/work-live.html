@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>交通时空大数据分析 - 职住分布分析</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            font-family: '楷体';
+            background-color: #000;
+            color: #02a6b5;
+            position: relative; /* 添加相对定位，以便流星绝对定位相对于 body */
+            overflow: hidden;/* 防止流星溢出页面 */
+        }
+
+        .header {
+            background-color: #000;
+            color: #02a6b5;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 0 10px #02a6b5;
+            border-bottom: 1px solid #02a6b5;
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 10px #02a6b5;
+            }
+            to {
+                box-shadow: 0 0 20px #02a6b5;
+            }
+        }
+
+        .showTime {
+                font-family: '楷体';
+                color: white;
+                font-size:1rem;
+                right:0;
+       }
+
+        .content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            width: 200px;
+            padding: 20px 0;
+            box-shadow: 0 0 10px #02a6b5;
+            border-radius: 0 15px 15px 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            border-right: 1px solid #02a6b5;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* 让侧边栏元素垂直分布 */
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            border-radius: 20px;
+            color: #02a6b5;
+            margin: 10px;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: #02a6b5;
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        .sidebar-menu li.active {
+            background-color: #02a6b5;
+            color: #000;
+            box-shadow: 0 0 5px #02a6b5;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin-left: 200px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.6));
+            padding: 20px;
+        }
+
+        #moduleSelect {
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #02a6b5;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #02a6b5;
+            transition: all 0.3s;
+        }
+
+        #moduleSelect:hover {
+            border-color: #fff;
+            box-shadow: 0 0 5px #02a6b5;
+        }
+
+        #map-container {
+            flex: 1;
+            position: relative;
+            background-color: transparent;
+            border: 1px solid #02a6b5;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #02a6b5;
+        }
+
+        .dropdown-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 0 5px #02a6b5;
+            border: 1px solid #02a6b5;
+            color: #02a6b5;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 50%;
+            box-shadow: 0 0 3px #02a6b5;
+        }
+
+        .meteor {
+            position: absolute;
+            width: .5rem;
+            /* 流星的宽度 */
+            height: .75rem;
+            /* 流星的长度 */
+            background: linear-gradient(to bottom, white, rgba(255, 255, 255, 0));
+            /* 白色渐变效果 */
+            border-radius: 50%;
+            box-shadow: 0 0 10px white;
+            animation: meteor-fall linear infinite;
+        }
+
+        /* 定义流星动画 */
+        @keyframes meteor-fall {
+            0% {
+                transform: translate(-100%, -100%) rotate(45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(50vw, 50vh) rotate(45deg);
+                opacity: 0;
+            }
+        }
+
+         /* 生成多个流星 */
+        .meteor:nth-child(1) {
+            left: 10%;
+            top:-10%;
+            animation-duration: 3s;
+            animation-delay: 0s;
+        }
+
+        .meteor:nth-child(2) {
+            left: 20%;
+            top:-10%;
+            animation-duration: 4s;
+            animation-delay: 1s;
+        }
+
+        .meteor:nth-child(3) {
+            left: 30%;
+            top:-10%;
+            animation-duration: 5s;
+            animation-delay: 0s;
+        }
+
+        .meteor:nth-child(4) {
+            left: 40%;
+            top:-10%;
+            animation-duration: 2s;
+            animation-delay: 1s;
+        }
+
+        .meteor:nth-child(5) {
+            left: 50%;
+            top:-10%;
+            animation-duration: 4s;
+            animation-delay: 0s;
+        }
+
+        .meteor:nth-child(6) {
+            left: 60%;
+            top:-10%;
+            animation-duration: 3.5s;
+            animation-delay: 0.5s;
+        }
+
+        .meteor:nth-child(7) {
+            left: 70%;
+            top:-10%;
+            animation-duration: 4.5s;
+            animation-delay: 1s;
+        }
+
+        .meteor:nth-child(8) {
+            left: 80%;
+            top:-10%;
+            animation-duration: 5s;
+            animation-delay: 0.5s;
+        }
+
+        .meteor:nth-child(9) {
+            left: 90%;
+            top:-10%;
+            animation-duration: 3s;
+            animation-delay: 1s;
+        }
+
+        .meteor:nth-child(10) {
+            left: 5%;
+            top:-10%;
+            animation-duration: 4s;
+            animation-delay: 1.5s;
+        }
+        /* 定义图片旋转动画 */
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 侧边栏底部图片样式 */
+        .sidebar img {
+            width: 80%;
+            /* 图片宽度 */
+            margin: 20px auto;
+            /* 图片上下间距和水平居中 */
+            animation: rotate 5s linear infinite;
+            /* 应用旋转动画 */
+        }
+    </style>
+</head>
+<body>
+<!-- 添加流星元素 -->
+    <div class="meteor"></div>
+    <div class="meteor"></div>
+    <div class="meteor"></div>
+    <div class="meteor"></div>
+    <div class="meteor"></div>
+    <div class="meteor"></div>
+    <div class="meteor"></div>
+    <div class="meteor"></div>
+    <div class="meteor"></div>
+    <div class="meteor"></div>
+
+    <div class="header">
+        <h1>交通时空大数据分析</h1>
+        <div class="showTime"></div>
+    </div>
+    <div class="content">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li onclick="location.href='index.html'">首页</li>
+                <li onclick="location.href='travel.html'">出行驻留分析</li>
+                <li class="active">职住分布分析</li>
+                <li onclick="location.href='density.html'">实时人群密度</li>
+                <li onclick="location.href='travel-mode.html'">出行方式</li>
+                <li onclick="location.href='travel-purpose.html'">出行目的</li>
+            </ul>
+            <!-- 添加图片元素 -->
+            <img src="u4.png" alt="旋转图片">
+        </div>
+        <div class="main-content">
+            <div class="dropdown-container">
+                <select id="moduleSelect" onchange="handleModuleChange()">
+                    <option value="index.html">首页</option>
+                    <option value="travel.html">出行驻留分析</option>
+                    <option value="work-live.html" selected>职住分布分析</option>
+                    <option value="density.html">实时人群密度</option>
+                    <option value="travel-mode.html">出行方式</option>
+                    <option value="travel-purpose.html">出行目的</option>
+                </select>
+            </div>
+            <div id="map"></div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4169E1"></div>
+                    <span>出游</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FF6B6B"></div>
+                    <span>居住</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="error" class="error-message"></div>
+    <script src="./work-live.js"></script>
+    <script>
+        function handleModuleChange() {
+            const select = document.getElementById('moduleSelect');
+            const selectedValue = select.value;
+            if (selectedValue !== '#') {
+                window.location.href = selectedValue;
+            }
+        }
+        var t = null;
+        t = setTimeout(time, 1000);
+        function time() {
+            clearTimeout(t);
+            dt = new Date();
+            var y = dt.getFullYear();
+            var mt = dt.getMonth() + 1;
+            var day = dt.getDate();
+            var h = dt.getHours();
+            var m = dt.getMinutes();
+            var s = dt.getSeconds();
+            document.querySelector(".showTime").innerHTML =
+                "当前时间：" +
+                y +
+                "年" +
+                mt +
+                "月" +
+                day +
+                "日" +
+                h +
+                "时" +
+                m +
+                "分" +
+                s +
+                "秒";
+            t = setTimeout(time, 1000);
+        }
+    </script>
+</body>
+</html> 

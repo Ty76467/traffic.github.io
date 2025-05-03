@@ -1,0 +1,289 @@
+@charset "UTF-8";
+@font-face {
+  font-family: NeueMachina-Regular;
+  font-weight: 400;
+  src: url(./assert/font/NeueMachina-Regular.woff2) format("truetype");
+}
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: rgb(22, 30, 49);
+}
+
+.box {
+  width: 80vw;
+  height: 80vh;
+  background: url(../static/assert/bk1.jpg);
+  background-attachment: fixed;
+  background-size: cover;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 30px;
+  font-family: NeueMachina-Regular;
+  overflow: hidden;
+}
+.box .forms {
+  width: 50%;
+  height: 100%;
+  background-color: rgb(45, 50, 80);
+  border-radius: 30px 0 0 30px;
+  color: rgb(255, 255, 255);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  position: relative;
+  /* 返回按钮样式 */
+}
+.box .forms .tips {
+  width: 70%;
+  height: 10%;
+  box-sizing: border-box;
+  font-size: 25px;
+  margin: 4vh;
+}
+.box .forms .tips span {
+  margin: 0 10px 0 0;
+  cursor: pointer;
+  padding-bottom: 5px;
+  transition: 0.1s;
+  color: rgb(100, 108, 154);
+}
+.box .forms .tips span:hover {
+  border-bottom: 4px solid rgb(11, 115, 210);
+  color: #fff;
+}
+.box .forms .tips .login-btn {
+  border-bottom: 4px solid rgb(11, 115, 210);
+  color: #fff;
+}
+.box .forms .reset-pwd-form.active {
+  opacity: 1;
+  z-index: 10;
+  animation: into 0.5s ease;
+}
+.box .forms .back-login-btn, .box .forms .show-reset-btn {
+  color: rgb(100, 108, 154);
+  cursor: pointer;
+  font-size: 14px;
+  margin: 2vh 0;
+  display: block;
+  text-align: center;
+}
+.box .forms .back-login-btn:hover, .box .forms .show-reset-btn:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+.box .forms .login,
+.box .forms .register,
+.box .forms .reset-pwd-form {
+  width: 70%;
+  top: 20%;
+}
+.box .forms .login .form-title h1,
+.box .forms .register .form-title h1,
+.box .forms .reset-pwd-form .form-title h1 {
+  margin-bottom: 10px;
+}
+.box .forms .login .form,
+.box .forms .register .form,
+.box .forms .reset-pwd-form .form {
+  margin-top: 3vw;
+}
+.box .forms .login .form .username::before,
+.box .forms .register .form .username::before,
+.box .forms .reset-pwd-form .form .username::before {
+  content: "用户名";
+}
+.box .forms .login .form .password::before,
+.box .forms .register .form .password::before,
+.box .forms .reset-pwd-form .form .password::before {
+  content: "密码";
+}
+.box .forms .login .form .input-item,
+.box .forms .register .form .input-item,
+.box .forms .reset-pwd-form .form .input-item {
+  width: 100%;
+  height: 70px;
+  margin: 10px 0;
+  transition: 0.5s;
+}
+.box .forms .login .form .input-item::before,
+.box .forms .register .form .input-item::before,
+.box .forms .reset-pwd-form .form .input-item::before {
+  display: block;
+  position: absolute;
+  color: rgb(100, 108, 154);
+  padding: 10px 5px 1px 20px;
+  font-size: 14px;
+}
+.box .forms .login .form .input-item input,
+.box .forms .register .form .input-item input,
+.box .forms .reset-pwd-form .form .input-item input {
+  width: 100%;
+  height: 100%;
+  background-color: rgb(66, 71, 105);
+  outline: none;
+  border: 0;
+  padding: 20px 5px 1px 20px;
+  box-sizing: border-box;
+  color: #fff;
+  font-size: 14px;
+}
+.box .forms .login .form .input-item input:focus,
+.box .forms .register .form .input-item input:focus,
+.box .forms .reset-pwd-form .form .input-item input:focus {
+  border-left: 3px solid rgb(86, 179, 229);
+}
+.box .forms .login .form .show-reset-btn,
+.box .forms .register .form .show-reset-btn,
+.box .forms .reset-pwd-form .form .show-reset-btn {
+  cursor: pointer;
+  color: rgb(100, 108, 154);
+}
+.box .forms .login .form .form-buttons,
+.box .forms .register .form .form-buttons,
+.box .forms .reset-pwd-form .form .form-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 0;
+}
+.box .forms .login .form .btn,
+.box .forms .register .form .btn,
+.box .forms .reset-pwd-form .form .btn {
+  width: 40%;
+  height: 50px;
+  cursor: pointer;
+  border: 0;
+  background-color: rgb(105, 128, 228);
+  color: rgb(45, 50, 80);
+  margin: 10px 0;
+  border-radius: 5px;
+  font-size: 20px;
+  box-shadow: 0px 0px 10px rgb(105, 128, 228);
+  transition: 0.3s;
+  margin-top: 0;
+  font-family: NeueMachina-Regular;
+}
+.box .forms .login .form .btn:hover,
+.box .forms .register .form .btn:hover,
+.box .forms .reset-pwd-form .form .btn:hover {
+  box-shadow: 0px 0px 15px rgb(11, 115, 210);
+}
+.box .forms .login .form .form-buttons,
+.box .forms .register .form .form-buttons,
+.box .forms .reset-pwd-form .form .form-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 0;
+}
+.box .forms .login {
+  position: absolute;
+  opacity: 1;
+  z-index: 10;
+  animation: into 1s ease;
+}
+.box .forms .register {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+.box .forms .reset-pwd-form {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+
+@media (max-width: 1024px) {
+  .box {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+  .box .forms {
+    width: 100%;
+    border-radius: 0;
+  }
+  .box .forms .other-select {
+    justify-content: flex-end !important;
+  }
+  .box .forms .other-login {
+    flex-direction: column;
+    position: relative;
+    justify-content: center;
+  }
+  .box .forms .other-login .login-img {
+    position: absolute;
+    right: 0;
+    top: 5vh;
+  }
+}
+@keyframes into {
+  0% {
+    transform: translateY(5vh);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+/* 全局错误提示 */
+.global-error {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 80%;
+  max-width: 600px;
+  animation: slideDown 0.5s ease, fadeOut 3s 2s forwards;
+}
+
+.global-error ul {
+  list-style: none;
+  background: rgba(255, 68, 68, 0.9);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+  border: 1px solid #ff5555;
+}
+
+.global-error li {
+  margin: 5px 0;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.global-error li::before {
+  content: "⚠️";
+  margin-right: 10px;
+}
+
+@keyframes slideDown {
+  from {
+    top: -50px;
+    opacity: 0;
+  }
+  to {
+    top: 20px;
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}/*# sourceMappingURL=style.css.map */
